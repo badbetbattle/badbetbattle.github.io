@@ -1,3 +1,9 @@
+---
+title: Privacy Policy
+layout: template
+filename: privacy-policy.md
+--- 
+
 **Privacy Policy**
 
 This privacy policy applies to the Sudoku app for mobile devices, together with any related services operated by Jeff Yam (collectively, the "Application"). Jeff Yam is hereby referred to as the "Service Provider".
