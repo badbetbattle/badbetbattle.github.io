@@ -1,3 +1,9 @@
+---
+title: Terms and Conditions
+layout: template
+filename: terms-and-conditions.md
+--- 
+
 **Terms & Conditions**  
 
 These terms and conditions apply to the Sudoku app for mobile devices, together with any related services operated by Jeff Yam (collectively, the "Application"). Jeff Yam is hereby referred to as the "Service Provider".
