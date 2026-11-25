@@ -1,56 +1,51 @@
----
-# Pick your own name that is unique in your repo 
-name: mkdocs-publish
-on: 
-  push:
-    branches:
-     # or any branch you want
-     - main
-  # Convenient for testing
-  workflow_dispatch: 
+# Sample workflow for building and deploying a Jekyll site to GitHub Pages
+name: Deploy Jekyll with GitHub Pages dependencies preinstalled
 
-# The GITHUB_TOKEN permissions to be able to write to the gh-pages environment.
+on:
+  # Runs on pushes targeting the default branch
+  push:
+    branches: ["master"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
-jobs: 
-  # This job builds the docs and publishes them to a GHA artifact 
-  mkdocs-build:
-    name: Build mkdocs 
-    runs-on:
-      ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      - name: Build Documents 
-        id: build-docs
-        # See https://github.com/jmpicnic/actions-gen-mkdocs for details 
-        uses: jmpicnic/actions-gen-mkdocs@v1 
-        with:
-          docs-dir: the-repo-subdirectory-for-the-documentation-root 
-          site-target-dir: the-subdirectory-where-the-html-will-be
-          requirements-file-name: the-pip-freeze-requirements.txt 
-          mkdocs-file-name: the-mkdocs.yml-file-location
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2 
-        with: 
-          path: ${{ steps.build-docs.outputs.generated-site }}
-  deploy:
-    # Add a dependency to the build job 
-    needs: mkdocs-build
-    # Specify runner + deployment step
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Build job
+  build:
     runs-on: ubuntu-latest
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    # (this can be omitted if the permissions are at the top)
-    permissions: 
-      pages: write # to deploy to Pages 
-      id-token: write # to verify the deployment originates from an appropriate source
-    # Deploy to the github-pages environment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+  # Deployment job
+  deploy:
     environment:
-      name: github-pages 
-      url: ${{ steps.deployment.outputs.page_url }} 
-    steps: 
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Deploy to GitHub Pages
-        id: deployment uses: actions/deploy-pages@v2 
-        # or the latest "vX.X.X" version tag for this action
+        id: deployment
+        uses: actions/deploy-pages@v5
